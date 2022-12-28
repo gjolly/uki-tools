@@ -104,6 +104,8 @@ initrd_offs=$((linux_offs + $(stat -Lc%s "$VMLINUZ")))
 
 # build the UKI
 
+echo "Generating Unified Kernel Image" >&2
+
 UNSIGNE_UKI="/tmp/unified-kernel-image.efi"
 objcopy \
    --add-section .osrel="$OS_RELEASE" --change-section-vma .osrel="$(printf 0x%x $osrel_offs)" \
@@ -117,6 +119,8 @@ objcopy \
 # Sign the image if a key is found
 
 if [ -e "$SB_PATH/sb.key" ]; then
+  echo "Signing Unified Kernel Image with $SB_PATH/sb.key" >&2
+
   sbsign --cert "$SB_PATH/sb.crt" --key "$SB_PATH/sb.key" --output "$OUTPUT_PATH" "$UNSIGNE_UKI"
   rm "$UNSIGNE_UKI"
 else
