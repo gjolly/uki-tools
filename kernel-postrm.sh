@@ -15,7 +15,7 @@ test -e "$uki_path" || exit 0
 
 rm -f "$uki_path"
 
-boot_num=$(efibootmgr | grep "$version" | sed 's#^Boot\([0-9]\+\)\*.*$#\1#g')
+boot_num=$(efibootmgr | grep "$version" | sed 's#^Boot\([0-9A-F]\+\)\*.*$#\1#g')
 if [ -n "$boot_num" ]; then
   efibootmgr -b "$boot_num" -B
 fi
