@@ -11,9 +11,9 @@ if [ -z "${version}" ]; then
 fi
 
 uki_path="/boot/efi/EFI/ubuntu/kernel-$version.efi"
-test -e "$uki_path" || exit 0
-
-rm -f "$uki_path"
+if [ -e "$uki_path" ]; then
+  rm -f "$uki_path"
+fi
 
 boot_num=$(efibootmgr | grep "$version" | sed 's#^Boot\([0-9A-F]\+\)\*.*$#\1#g')
 if [ -n "$boot_num" ]; then

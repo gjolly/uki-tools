@@ -21,12 +21,11 @@ if [ ! -e "$uki_path" ]; then
 fi
 
 # the partition here should not be hardcoded
-boot_num=$(efibootmgr | grep "$version" | sed 's#^Boot\([0-9]\+\)\*.*$#\1#g')
+boot_num=$(efibootmgr | grep "$version" | sed 's#^Boot\([0-9A-Z]\+\)\*.*$#\1#g')
 
 if [ -z "$boot_num" ]; then
   efibootmgr --create \
     --disk /dev/nvme0n1 --part 1 \
     --label "Ubuntu $version" \
-    --loader '\EFI\ubuntu\shimx64.efi' \
-    -u "\\EFI\\ubuntu\\kernel-$version.efi"
+    --loader "\\EFI\\ubuntu\\kernel-$version.efi"
 fi
