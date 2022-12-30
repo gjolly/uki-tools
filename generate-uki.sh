@@ -87,7 +87,7 @@ verify-pre-requisites
 KERNEL_CMDLINE=/tmp/cmdline.txt
 SPLASH_IMG=/tmp/splash.bmp
 
-cat /proc/cmdline | cut -f '2-' -d' ' > "$KERNEL_CMDLINE"
+head -n1 /proc/cmdline | sed 's|BOOT_IMAGE=\S\+\ ||' > "$KERNEL_CMDLINE"
 cp /sys/firmware/acpi/bgrt/image "$SPLASH_IMG"
 
 OS_RELEASE="/usr/lib/os-release"
