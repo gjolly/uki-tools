@@ -8,6 +8,9 @@ KERNEL_PATH="/boot/vmlinuz"
 INITRD_PATH="/boot/initrd.img"
 SB_PATH="./keys"
 SHOW_HELP=NO
+KERNEL_CMDLINE="/proc/cmdline"
+SPLASH_IMG="/sys/firmware/acpi/bgrt/image"
+OS_RELEASE="/usr/lib/os-release"
 
 # functions
 
@@ -32,6 +35,12 @@ Build a Unified Kernel Image and sign it
                         Value: $OUTPUT_PATH
   --secureboot <path>   Path to secureboot folder. The folder should contain sb.crt and sb.key
                         Value: $SB_PATH
+  --cmdline <path>      File path to kernel command line.
+                        Value: $KERNEL_CMDLINE
+  --splash <path>       File path to splash screen.
+                        Value: $SPLASH_IMG
+  --os-release <path>   Path to os-release file.
+                        Value: $OS_RELEASE
   --verbose             Set -x, usefull for debugging
   --help                Print this help
 EOF
@@ -62,6 +71,18 @@ do
       SB_PATH=$2
       shift
       ;;
+    --cmdline|-c)
+      KERNEL_CMDLINE=$2
+      shift
+      ;;
+    --splash|-p)
+      SPLASH_IMG=$2
+      shift
+      ;;
+    --os-release|-r)
+      OS_RELEASE=$2
+      shift
+      ;;
     --verbose|-v)
       set -x
       ;;
@@ -84,13 +105,8 @@ fi
 
 verify-pre-requisites
 
-KERNEL_CMDLINE=/tmp/cmdline.txt
-SPLASH_IMG=/tmp/splash.bmp
+# by default we use the symlinks placed in /boot
 
-head -n1 /proc/cmdline | sed 's|BOOT_IMAGE=\S\+\ ||' > "$KERNEL_CMDLINE"
-cp /sys/firmware/acpi/bgrt/image "$SPLASH_IMG"
-
-OS_RELEASE="/usr/lib/os-release"
 VMLINUZ="$(realpath $KERNEL_PATH)"
 INITRD="$(realpath $INITRD_PATH)"
 
