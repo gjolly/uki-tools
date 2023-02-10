@@ -11,8 +11,22 @@ SHOW_HELP=NO
 KERNEL_CMDLINE="/proc/cmdline"
 SPLASH_IMG="/sys/firmware/acpi/bgrt/image"
 OS_RELEASE="/usr/lib/os-release"
+NEW_CMDLINE="/tmp/cmdline"
 
 # functions
+
+# the cmdline usually starts with BOOT_IMAGE=<path_to_vmlinuz>
+# we need to manually fix this path
+function fix-cmdline {
+  NEW_CMDLINE="$1"
+
+  local cmdline="$(cat $KERNEL_CMDLINE)"
+  if [ "${cmdline:0:10}" = 'BOOT_IMAGE' ]; then
+      cmdline="$(echo "${cmdline}" | cut -d' ' -f1)"
+  fi
+
+  echo "BOOT_IMAGE=$OUTPUT_PATH $cmdline" | head -n1 > "$NEW_CMDLINE"
+}
 
 function verify-pre-requisites {
   if [ ! -f "$EFI_STUB" ]; then
@@ -104,6 +118,7 @@ then
 fi
 
 verify-pre-requisites
+fix-cmdline "$NEW_CMDLINE"
 
 # by default we use the symlinks placed in /boot
 
@@ -114,7 +129,7 @@ INITRD="$(realpath $INITRD_PATH)"
 
 osrel_offs=$(objdump -h "$EFI_STUB" | awk 'NF==7 {size=strtonum("0x"$3); offset=strtonum("0x"$4)} END {print size + offset}')
 cmdline_offs=$((osrel_offs + $(stat -Lc%s "$OS_RELEASE")))
-splash_offs=$((cmdline_offs + $(stat -Lc%s "$KERNEL_CMDLINE")))
+splash_offs=$((cmdline_offs + $(stat -Lc%s "$NEW_CMDLINE")))
 linux_offs=$((splash_offs + $(stat -Lc%s "$SPLASH_IMG")))
 initrd_offs=$((linux_offs + $(stat -Lc%s "$VMLINUZ")))
 
@@ -125,12 +140,11 @@ echo "Generating Unified Kernel Image" >&2
 UNSIGNE_UKI="/tmp/unified-kernel-image.efi"
 objcopy \
    --add-section .osrel="$OS_RELEASE" --change-section-vma .osrel="$(printf 0x%x $osrel_offs)" \
-   --add-section .cmdline=$KERNEL_CMDLINE --change-section-vma .cmdline="$(printf 0x%x $cmdline_offs)" \
+   --add-section .cmdline=$NEW_CMDLINE --change-section-vma .cmdline="$(printf 0x%x $cmdline_offs)" \
    --add-section .splash=$SPLASH_IMG --change-section-vma .splash="$(printf 0x%x $splash_offs)" \
    --add-section .linux="$VMLINUZ" --change-section-vma .linux="$(printf 0x%x $linux_offs)" \
    --add-section .initrd="$INITRD" --change-section-vma .initrd="$(printf 0x%x $initrd_offs)" \
-   "$EFI_STUB" \
-   "$UNSIGNE_UKI"
+   "$EFI_STUB" "$UNSIGNE_UKI"
 
 # Sign the image if a key is found
 
@@ -142,3 +156,5 @@ if [ -e "$SB_PATH/sb.key" ]; then
 else
   mv "$UNSIGNE_UKI" "$OUTPUT_PATH"
 fi
+
+rm "$NEW_CMDLINE"
