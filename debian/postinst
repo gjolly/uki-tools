@@ -1,0 +1,3 @@
+#!/bin/bash -e
+
+/etc/kernel/postinst.d/zz-unified-kernel-image "$(uname -r)"

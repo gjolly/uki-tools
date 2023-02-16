@@ -1,0 +1,13 @@
+Source: uki-tools
+Maintainer: Gauthier Jolly <contact@gauthierjolly.com>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper-compat (= 13)
+
+Package: uki-tools
+Architecture: amd64 arm64
+Depends: efibootmgr, sbsigntool, binutils, systemd-boot-efi
+Description: Setup Unified Kernel Image
+  Tools and hooks to manage unified kernel image, to sign
+  it and to boot from it.

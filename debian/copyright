@@ -1,0 +1,15 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: uki-tools
+Upstream-Contact: https://github.com/gjolly/unified-kernel-image/issues
+Source: https://github.com/gjolly/unified-kernel-image
+#
+# Please double check copyright with the licensecheck(1) command.
+
+Files:
+  *
+Copyright: 2023 Gauthier Jolly
+License:   GPL-3+
+
+#----------------------------------------------------------------------------
+# Files marked as NO_LICENSE_TEXT_FOUND may be covered by the following
+# license/copyright files.
