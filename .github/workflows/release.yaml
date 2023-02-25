@@ -1,0 +1,26 @@
+name: create release
+on:
+  push:
+    tags:
+      - debian/**
+
+jobs:
+  runs-on: ubuntu-latest
+  steps:
+    - name: install debian tools
+      run: |
+        sudo apt-get update && \
+        sudo apt-get install debhelper make dpkg-dev
+    - name: checkout repo
+      uses: actions/checkout@v3
+      with:
+        path: uki-tools
+    - name: bulid package
+      run: |
+        cd uki-tools && \
+        ./build-package.sh --source --binary --no-sign
+    - name: create release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          uki-tools_*
