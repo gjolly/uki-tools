@@ -31,7 +31,7 @@ do
 done
 
 echo ">>>> building tarball" 2>&1
-tar --exclude-vcs --exclude='debian' -czvf ../uki-tools_${VERSION}.orig.tar.gz *
+tar --exclude-vcs --exclude='debian' -czvf ../uki-tools_${VERSION}.orig.tar.gz .
 
 if [ "$SOURCE" = 'true' ]; then
   echo ">>>> building source package" >&2
