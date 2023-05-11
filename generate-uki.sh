@@ -8,7 +8,7 @@ KERNEL_PATH="/boot/vmlinuz"
 INITRD_PATH="/boot/initrd.img"
 SB_PATH="./keys"
 SHOW_HELP=NO
-KERNEL_CMDLINE="/proc/cmdline"
+KERNEL_CMDLINE="/etc/kernel/cmdline"
 SPLASH_IMG="/sys/firmware/acpi/bgrt/image"
 OS_RELEASE="/usr/lib/os-release"
 NEW_CMDLINE="/tmp/cmdline"
@@ -19,12 +19,7 @@ NEW_CMDLINE="/tmp/cmdline"
 # we need to manually fix this path
 function fix-cmdline {
   NEW_CMDLINE="$1"
-
   local cmdline="$(cat $KERNEL_CMDLINE)"
-  if [ "${cmdline:0:10}" = 'BOOT_IMAGE' ]; then
-      cmdline="$(echo "${cmdline}" | cut -d' ' -f1)"
-  fi
-
   echo "BOOT_IMAGE=$OUTPUT_PATH $cmdline" | head -n1 > "$NEW_CMDLINE"
 }
 
