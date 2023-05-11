@@ -1,6 +1,9 @@
 BINDIR			= $(DESTDIR)/usr/bin
 KERNEL_HOOKS_DIR 	= $(DESTDIR)/etc/kernel
 
+build:
+	@echo "Nothing to build"
+
 install:
 	$(INSTALL) -m 755 -d $(BINDIR)
 	$(INSTALL) -m 755 generate-uki.sh $(BINDIR)/generate-uki
